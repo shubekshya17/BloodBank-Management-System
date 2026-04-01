@@ -1,0 +1,83 @@
+﻿@model List<BloodBankMVC.Models.Audit>
+@{
+	ViewData["Title"] = "Audit Logs";
+}
+
+<div class="admin-page">
+	<div class="container">
+		<div class="page-header">
+			<h1><i class="fas fa-history"></i> Audit Logs</h1>
+			<a href="@Url.Action("Dashboard")" class="btn btn-secondary">
+				<i class="fas fa-arrow-left"></i> Back to Dashboard
+			</a>
+		</div>
+
+		<div class="table-container">
+			<table class="data-table">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Date & Time</th>
+						<th>Action Type</th>
+						<th>Donor</th>
+						<th>Requestor</th>
+						<th>Units</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var audit in Model)
+					{
+						<tr>
+							<td><strong>#@audit.Id</strong></td>
+							<td>@audit.Date.ToString("MMM dd, yyyy hh:mm tt")</td>
+							<td>
+								@if (audit.ActionType == "Donation")
+								{
+									<span class="badge badge-success">
+										<i class="fas fa-hand-holding-heart"></i> Donation
+									</span>
+								}
+								else
+								{
+									<span class="badge badge-info">
+										<i class="fas fa-hand-holding-medical"></i> Request
+									</span>
+								}
+							</td>
+							<td>
+								@if (audit.ActionType == "Donation" && audit.Donor != null)
+								{
+									<span>@audit.Donor.Name</span>
+									<br />
+									<small class="text-muted">
+										@audit.Donor.BloodGroup?.BloodGroupName
+									</small>
+								}
+								else
+								{
+									<span class="text-muted">-</span>
+								}
+							</td>
+
+							<td>
+								@if (audit.ActionType == "Request" && audit.Requestor != null)
+								{
+									<span>@audit.Requestor.Name</span>
+									<br />
+									<small class="text-muted">
+										@audit.Requestor.BloodGroup?.BloodGroupName
+									</small>
+								}
+								else
+								{
+									<span class="text-muted">-</span>
+								}
+							</td>
+							<td><strong>@audit.Unit</strong> Units</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>

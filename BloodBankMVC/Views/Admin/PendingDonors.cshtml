@@ -1,0 +1,75 @@
+﻿@model List<BloodBankMVC.Models.Donor>
+@{
+    ViewData["Title"] = "Pending Donors";
+}
+
+<div class="admin-page">
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-user-clock"></i> Pending Donor Requests</h1>
+            <a href="@Url.Action("Dashboard")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        @if (Model.Count == 0)
+        {
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <h2>No Pending Donors</h2>
+                <p>All donor requests have been processed.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Donor ID</th>
+                            <th>Name</th>
+                            <th>Blood Group</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Units</th>
+                            <th>Date</th>
+                            <th>Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var donor in Model)
+                        {
+                            <tr>
+                                <td><strong>#@donor.Id</strong></td>
+                                <td>@donor.Name</td>
+                                <td>
+                                    <span class="blood-badge">@donor.BloodGroup.BloodGroupName</span>
+                                </td>
+                                <td>@donor.Age</td>
+                                <td>@donor.Gender</td>
+                                <td><strong>@donor.Unit</strong> Units</td>
+                                <td>@donor.DonateDate.ToString("MMM dd, yyyy")</td>
+                                <td>@donor.Address</td>
+                                <td class="action-buttons">
+                                    <form asp-action="ApproveDonor" method="post" style="display:inline;">
+                                        <input type="hidden" name="id" value="@donor.Id" />
+                                        <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Approve this donor?');">
+                                            <i class="fas fa-check"></i> Approve
+                                        </button>
+                                    </form>
+                                    <form asp-action="RejectDonor" method="post" style="display:inline;">
+                                        <input type="hidden" name="id" value="@donor.Id" />
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Reject this donor?');">
+                                            <i class="fas fa-times"></i> Reject
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

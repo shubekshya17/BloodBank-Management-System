@@ -1,0 +1,66 @@
+﻿@model List<BloodBankMVC.Models.Requestor>
+@{
+    ViewData["Title"] = "All Requests";
+}
+
+<div class="admin-page">
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-list"></i> All Blood Requests</h1>
+            <a href="@Url.Action("Dashboard")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Patient Name</th>
+                        <th>Blood Group</th>
+                        <th>Gender</th>
+                        <th>Units</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var requestor in Model)
+                    {
+                        <tr>
+                            <td><strong>#@requestor.Id</strong></td>
+                            <td>@requestor.Name</td>
+                            <td>
+                                <span class="blood-badge">@requestor.BloodGroup.BloodGroupName</span>
+                            </td>
+                            <td>@requestor.Gender</td>
+                            <td><strong>@requestor.UnitRequested</strong> Units</td>
+                            <td>@requestor.Date.ToString("MMM dd, yyyy")</td>
+                            <td>
+                                @if (requestor.Status == 0)
+                                {
+                                    <span class="badge badge-warning">
+                                        <i class="fas fa-clock"></i> Pending
+                                    </span>
+                                }
+                                else if (requestor.Status == 1)
+                                {
+                                    <span class="badge badge-success">
+                                        <i class="fas fa-check-circle"></i> Assigned
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-danger">
+                                        <i class="fas fa-times-circle"></i> Rejected
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

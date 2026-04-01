@@ -1,0 +1,116 @@
+﻿@model BloodBankMVC.Models.Requestor
+@{
+    ViewData["Title"] = "Request Blood";
+}
+
+<div class="form-page">
+    <div class="container">
+        <div class="form-container">
+            <div class="form-header">
+                <i class="fas fa-hand-holding-medical"></i>
+                <h1>Blood Request Form</h1>
+                <p>We're here to help you in your time of need</p>
+            </div>
+
+            <form asp-action="Request" method="post" class="donation-form">
+                @Html.AntiForgeryToken()
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Name" class="form-label">
+                            <i class="fas fa-user"></i> Patient Name
+                        </label>
+                        <input asp-for="Name" class="form-control" placeholder="Enter patient's full name" required />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Gender" class="form-label">
+                            <i class="fas fa-venus-mars"></i> Gender
+                        </label>
+                        <select asp-for="Gender" class="form-control" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <span asp-validation-for="Gender" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Address" class="form-label">
+                        <i class="fas fa-hospital"></i> Hospital/Address
+                    </label>
+                    <textarea asp-for="Address" class="form-control" rows="3" placeholder="Enter hospital name and address" required></textarea>
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="BloodGroupId" class="form-label">
+                            <i class="fas fa-tint"></i> Blood Group Required
+                        </label>
+                        <select asp-for="BloodGroupId" class="form-control" required>
+                            <option value="">Select Blood Group</option>
+                            @foreach (var bg in ViewBag.BloodGroups)
+                            {
+                                <option value="@bg.Id">@bg.BloodGroupName</option>
+                            }
+                        </select>
+                        <span asp-validation-for="BloodGroupId" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="UnitRequested" class="form-label">
+                            <i class="fas fa-flask"></i> Units Required
+                        </label>
+                        <input asp-for="UnitRequested" type="number" class="form-control" placeholder="1-10" min="1" max="10" required />
+                        <span asp-validation-for="UnitRequested" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Date" class="form-label">
+                        <i class="fas fa-calendar-day"></i> Date Required
+                    </label>
+                    <input asp-for="Date" type="date" class="form-control" required />
+                    <span asp-validation-for="Date" class="text-danger"></span>
+                </div>
+
+                <div class="request-info">
+                    <h3><i class="fas fa-info-circle"></i> Important Information</h3>
+                    <ul>
+                        <li>Requests are processed based on availability</li>
+                        <li>Emergency cases are given priority</li>
+                        <li>Admin will verify and approve your request</li>
+                        <li>You will be notified once blood is assigned</li>
+                    </ul>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-large">
+                        <i class="fas fa-paper-plane"></i> Submit Request
+                    </button>
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-secondary btn-large">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        // Set today as default date
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.querySelector('input[type="date"]');
+            if (dateInput && !dateInput.value) {
+                dateInput.valueAsDate = new Date();
+            }
+        });
+    </script>
+}
