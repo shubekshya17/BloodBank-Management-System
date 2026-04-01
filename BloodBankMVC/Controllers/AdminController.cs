@@ -140,7 +140,7 @@ namespace BloodBankMVC.Controllers
             if (result)
                 TempData["Success"] = "Blood assigned successfully!";
             else
-                TempData["Error"] = "Failed to assign blood. Check if sufficient blood is available.";
+                TempData["Error"] = "Failed to assign blood";
 
             return RedirectToAction("PendingRequests");
         }

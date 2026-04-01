@@ -10,12 +10,14 @@ namespace BloodBankMVC.Service.Implementation
         private readonly BloodBankContext _context;
         private readonly IBloodInventoryService _bloodInventoryService;
         private readonly IAuditService _auditService;
+        private readonly EmailService _emailService;
 
-        public RequestorService(BloodBankContext context, IBloodInventoryService bloodInventoryService, IAuditService auditService)
+        public RequestorService(BloodBankContext context, IBloodInventoryService bloodInventoryService, IAuditService auditService, EmailService emailService)
         {
             _context = context;
             _bloodInventoryService = bloodInventoryService;
             _auditService = auditService;
+            _emailService = emailService;
         }
 
         public async Task<List<Requestor>> GetAllRequestorsAsync()
@@ -75,7 +77,6 @@ namespace BloodBankMVC.Service.Implementation
 
                 // Deduct from collection
                 await _bloodInventoryService.DeductUnitsAsync(requestor.BloodGroupId, requestor.UnitRequested);
-
                 // Create audit record
                 await _auditService.CreateAuditAsync(new Audit
                 {
@@ -86,6 +87,27 @@ namespace BloodBankMVC.Service.Implementation
                 });
 
                 await _context.SaveChangesAsync();
+                /*try
+                {
+                    await _smsService.SendSmsAsync(requestor.MobileNumber,
+                        "Your blood has been assigned.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("SMS failed: " + ex.Message);
+                }*/
+                /*try
+                {
+                    await _emailService.SendEmailAsync(
+                        "sadikshyastha21@gmail.com",
+                        "Blood Request Approved",
+                        $"Your blood request has been approved. {requestor.UnitRequested} unit(s) have been assigned."
+                    );
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Email failed: " + ex.Message);
+                }*/
                 return true;
             }
             catch (Exception)
@@ -93,7 +115,6 @@ namespace BloodBankMVC.Service.Implementation
                 return false;
             }
         }
-
         public async Task<bool> RejectRequestAsync(int id)
         {
             try

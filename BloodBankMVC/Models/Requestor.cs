@@ -41,5 +41,8 @@ namespace BloodBankMVC.Models
 
         // 0 = UnAssigned, 1 = Assigned, 
         public int Status { get; set; } = 0;
+        [Required]
+        [Phone]
+        public string MobileNumber { get; set; }
     }
 }

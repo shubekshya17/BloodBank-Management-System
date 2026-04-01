@@ -1,4 +1,5 @@
 using BloodBankMVC.Data;
+using BloodBankMVC.Models;
 using BloodBankMVC.Service.Implementation;
 using BloodBankMVC.Service.Interface;
 using Microsoft.EntityFrameworkCore;
@@ -11,12 +12,18 @@ builder.Services.AddDbContext<BloodBankContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
     ));
+builder.Services.Configure<TwilioSettings>(
+    builder.Configuration.GetSection("Twilio"));
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
 
 builder.Services.AddScoped<IDonorService, DonorService>();
 builder.Services.AddScoped<IRequestorService, RequestorService>();
 builder.Services.AddScoped<IBloodInventoryService, BloodInventoryService>();
 builder.Services.AddScoped<IAuditService, AuditService>();
 builder.Services.AddScoped<IBloodGroupService, BloodGroupService>();
+builder.Services.AddScoped<SmsService>();
+builder.Services.AddScoped<EmailService>();
 
 // Add Session support for Admin authentication
 builder.Services.AddSession(options =>

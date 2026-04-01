@@ -47,6 +47,7 @@
                             <th>Units Required</th>
                             <th>Date</th>
                             <th>Hospital/Address</th>
+                            <th>Mobile No</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -74,6 +75,7 @@
                                 </td>
                                 <td>@requestor.Date.ToString("MMM dd, yyyy")</td>
                                 <td>@requestor.Address</td>
+                                <td>@requestor.MobileNumber</td>
                                 <td class="action-buttons">
                                     <form asp-action="AssignBlood" method="post" style="display:inline;">
                                         <input type="hidden" name="id" value="@requestor.Id" />
