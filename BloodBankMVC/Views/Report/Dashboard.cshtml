@@ -1,0 +1,262 @@
+@model BloodBankMVC.viewModel.BloodReportViewModel
+@using System.Text.Json
+
+@{
+    ViewData["Title"] = "Blood Report Dashboard";
+
+    var bloodLabels = JsonSerializer.Serialize(Model.BloodGroups.Select(x => x.Label));
+    var bloodData = JsonSerializer.Serialize(Model.BloodGroups.Select(x => x.Value));
+
+    var genderLabels = JsonSerializer.Serialize(Model.Gender.Select(x => x.Label));
+    var genderData = JsonSerializer.Serialize(Model.Gender.Select(x => x.Value));
+
+    var monthlyLabels = JsonSerializer.Serialize(Model.Monthly.Select(x => x.Label));
+    var monthlyData = JsonSerializer.Serialize(Model.Monthly.Select(x => x.Value));
+
+    var inventoryLabels = JsonSerializer.Serialize(Model.Inventory.Select(x => x.Label));
+    var inventoryData = JsonSerializer.Serialize(Model.Inventory.Select(x => x.Value));
+}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    .dashboard-wrap {
+        padding: 24px;
+        background: #f8f9fa;
+        font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    .dashboard-header {
+        background: linear-gradient(135deg, #dc143c, #b01030);
+        color: white;
+        padding: 24px;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        margin-bottom: 24px;
+    }
+
+    .dashboard-header h1 {
+        margin: 0;
+        font-size: 32px;
+        font-weight: 800;
+    }
+
+    .dashboard-header p {
+        margin: 8px 0 0;
+        opacity: 0.95;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 18px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border: 1px solid #dfe6e9;
+        transition: 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    }
+
+    .stat-label {
+        color: #7f8c8d;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .stat-value {
+        color: #2c3e50;
+        font-size: 30px;
+        font-weight: 800;
+    }
+
+    .chart-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+        gap: 20px;
+    }
+
+    .chart-card {
+        background: white;
+        border-radius: 18px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border: 1px solid #dfe6e9;
+    }
+
+    .chart-card h3 {
+        margin: 0 0 16px;
+        color: #2c3e50;
+        font-size: 18px;
+    }
+
+    canvas {
+        width: 100% !important;
+        height: 320px !important;
+    }
+
+    .insight-box {
+        margin-top: 20px;
+        background: #fff5f6;
+        border-left: 5px solid #dc143c;
+        padding: 16px 18px;
+        border-radius: 12px;
+        color: #2c3e50;
+        line-height: 1.7;
+    }
+</style>
+
+<div class="dashboard-wrap">
+    <div class="dashboard-header animate__animated animate__fadeInDown">
+        <h1>Blood Bank Report Dashboard</h1>
+        <p>Summary of donors, requests, inventory, blood groups, gender, and monthly donations</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Donors</div>
+            <div class="stat-value">@Model.TotalDonors</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Total Requests</div>
+            <div class="stat-value">@Model.TotalRequests</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Units Donated</div>
+            <div class="stat-value">@Model.TotalUnitsDonated</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Units Requested</div>
+            <div class="stat-value">@Model.TotalUnitsRequested</div>
+        </div>
+    </div>
+
+    <div class="chart-grid">
+        <div class="chart-card">
+            <h3>Blood Group Distribution</h3>
+            <canvas id="bloodChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h3>Gender Distribution</h3>
+            <canvas id="genderChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h3>Monthly Donation Trend</h3>
+            <canvas id="monthlyChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h3>Inventory by Blood Group</h3>
+            <canvas id="inventoryChart"></canvas>
+        </div>
+    </div>
+
+    <div class="insight-box">
+        <strong>Report Insight:</strong>
+        This dashboard helps compare donor supply, request demand, and blood stock availability.
+        Blood groups with lower inventory but higher demand should be prioritized in awareness and collection campaigns.
+    </div>
+</div>
+
+<script>
+    const bloodLabels = @Html.Raw(bloodLabels);
+    const bloodData = @Html.Raw(bloodData);
+
+    const genderLabels = @Html.Raw(genderLabels);
+    const genderData = @Html.Raw(genderData);
+
+    const monthlyLabels = @Html.Raw(monthlyLabels);
+    const monthlyData = @Html.Raw(monthlyData);
+
+    const inventoryLabels = @Html.Raw(inventoryLabels);
+    const inventoryData = @Html.Raw(inventoryData);
+
+    new Chart(document.getElementById('bloodChart'), {
+        type: 'doughnut',
+        data: {
+            labels: bloodLabels,
+            datasets: [{
+                data: bloodData,
+                backgroundColor: ['#dc143c', '#b01030', '#2c3e50', '#3498db', '#27ae60', '#f39c12', '#7f8c8d']
+            }]
+        },
+        options: {
+            responsive: true,
+            animation: { duration: 1200 },
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('genderChart'), {
+        type: 'bar',
+        data: {
+            labels: genderLabels,
+            datasets: [{
+                label: 'Count',
+                data: genderData,
+                backgroundColor: '#3498db'
+            }]
+        },
+        options: {
+            responsive: true,
+            animation: { duration: 1200 },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('monthlyChart'), {
+        type: 'line',
+        data: {
+            labels: monthlyLabels,
+            datasets: [{
+                label: 'Donations',
+                data: monthlyData,
+                borderColor: '#dc143c',
+                backgroundColor: 'rgba(220, 20, 60, 0.15)',
+                tension: 0.35,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            animation: { duration: 1200 },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('inventoryChart'), {
+        type: 'bar',
+        data: {
+            labels: inventoryLabels,
+            datasets: [{
+                label: 'Quantity',
+                data: inventoryData,
+                backgroundColor: '#2c3e50'
+            }]
+        },
+        options: {
+            responsive: true,
+            animation: { duration: 1200 },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>

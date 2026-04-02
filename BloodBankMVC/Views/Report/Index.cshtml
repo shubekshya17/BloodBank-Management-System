@@ -1,0 +1,338 @@
+@* NEXT LEVEL DASHBOARD: Survey vs Nepal *@
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+ .report-container {
+        padding: 30px;
+        background: var(--light-bg);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .report-card {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+        transition: 0.3s;
+    }
+
+    .report-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .report-title {
+        font-size: 28px;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+    }
+
+    .report-sub {
+        color: var(--text-muted);
+        margin-bottom: 20px;
+    }
+.dashboard {
+    padding: 30px;
+    background: var(--light-bg);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.title {
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    margin-bottom: 25px;
+}
+
+.card {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    transition: .3s;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.insight {
+    padding: 18px;
+    background: #fff5f6;
+    border-left: 5px solid var(--primary-color);
+    border-radius: 10px;
+    margin-top: 15px;
+}
+
+.big-stat {
+    font-size: 40px;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+canvas {
+    max-height: 320px;
+}
+</style>
+
+<div class="dashboard">
+
+    <!-- HEADER -->
+    <div class="card animate__animated animate__fadeInDown">
+        <div class="title">Blood Donation Dashboard</div>
+        <div class="subtitle">
+            Comparison between Survey Data (Kathmandu Valley) and Nepal Context
+        </div>
+
+        <div class="grid">
+            <div>
+                <div class="big-stat">25.9%</div>
+                <div>Your Survey Donation Rate</div>
+            </div>
+
+            <div>
+                <div class="big-stat">~7%</div>
+                <div>Estimated Nepal Regular Donors</div>
+            </div>
+
+            <div>
+                <div class="big-stat">+18%</div>
+                <div>Higher than national pattern</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN COMPARISON -->
+    <div class="grid">
+
+        <div class="card animate__animated animate__fadeInUp">
+            <h4>Donation Rate Comparison</h4>
+            <canvas id="compareChart"></canvas>
+
+            <div class="insight">
+                Your survey shows significantly higher participation compared to Nepal's general trend.
+                This is likely due to student awareness and urban concentration.
+            </div>
+        </div>
+
+        <div class="card animate__animated animate__fadeInUp">
+            <h4>Awareness vs Action Gap</h4>
+            <canvas id="gapChart"></canvas>
+
+            <div class="insight">
+                Even with high awareness, most people still do not donate — indicating behavioral barriers.
+            </div>
+        </div>
+
+        <div class="card animate__animated animate__fadeInUp">
+            <h4>Motivation vs Reality</h4>
+            <canvas id="motivationChart"></canvas>
+
+            <div class="insight">
+                Social responsibility is strong, but action conversion is weak — key area for campaigns.
+            </div>
+        </div>
+
+        <div class="card animate__animated animate__fadeInUp">
+            <h4>Urban Bias (Important Finding)</h4>
+            <canvas id="urbanChart"></canvas>
+
+            <div class="insight">
+                Kathmandu Valley dominates your data, meaning results are not nationally representative.
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<div class="report-container">
+
+    <div class="report-card animate__animated animate__fadeInDown">
+        <div class="report-title">Blood Donation Analysis</div>
+        <div class="report-sub">
+            Based on 85 responses from Kathmandu Valley
+        </div>
+
+        <div class="highlight">
+            Only <strong>25.9%</strong> people have donated blood, while <strong>74.1%</strong> have never donated.
+        </div>
+    </div>
+
+    <div class="grid">
+
+        <div class="report-card animate__animated animate__fadeInUp">
+            <h4>Donation Participation</h4>
+            <canvas id="donationChart"></canvas>
+        </div>
+
+        <div class="report-card animate__animated animate__fadeInUp">
+            <h4>Age Distribution</h4>
+            <canvas id="ageChart"></canvas>
+        </div>
+
+        <div class="report-card animate__animated animate__fadeInUp">
+            <h4>Blood Group Distribution</h4>
+            <canvas id="bloodChart"></canvas>
+        </div>
+
+        <div class="report-card animate__animated animate__fadeInUp">
+            <h4>Awareness Source</h4>
+            <canvas id="awarenessChart"></canvas>
+        </div>
+
+    </div>
+
+</div>
+<script>
+
+// 🔥 1. Comparison Chart
+new Chart(document.getElementById('compareChart'), {
+    type: 'bar',
+    data: {
+        labels: ['Your Survey', 'Nepal Avg'],
+        datasets: [{
+            label: 'Donation %',
+            data: [25.9, 7],
+            backgroundColor: ['#dc143c', '#2c3e50']
+        }]
+    },
+    options: {
+        animation: { duration: 1500 },
+        scales: { y: { beginAtZero: true } }
+    }
+});
+
+// 🔥 2. Awareness Gap
+new Chart(document.getElementById('gapChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Aware but Not Donating', 'Donating'],
+        datasets: [{
+            data: [74.1, 25.9],
+            backgroundColor: ['#f39c12', '#27ae60']
+        }]
+    },
+    options: {
+        animation: { duration: 1500 }
+    }
+});
+
+// 🔥 3. Motivation
+new Chart(document.getElementById('motivationChart'), {
+    type: 'pie',
+    data: {
+        labels: ['Social Service', 'Emergency Need', 'Peer Influence'],
+        datasets: [{
+            data: [60, 25, 15],
+            backgroundColor: ['#27ae60', '#3498db', '#7f8c8d']
+        }]
+    },
+    options: {
+        animation: { duration: 1500 }
+    }
+});
+
+// 🔥 4. Urban Bias
+new Chart(document.getElementById('urbanChart'), {
+    type: 'bar',
+    data: {
+        labels: ['Kathmandu', 'Lalitpur', 'Bhaktapur'],
+        datasets: [{
+            label: '%',
+            data: [68.2, 20, 11.8],
+            backgroundColor: '#dc143c'
+        }]
+    },
+    options: {
+        animation: { duration: 1500 },
+        scales: { y: { beginAtZero: true } }
+    }
+});
+// Donation Chart
+    new Chart(document.getElementById('donationChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Donated', 'Not Donated'],
+            datasets: [{
+                data: [25.9, 74.1],
+                backgroundColor: ['#27ae60', '#e74c3c']
+            }]
+        },
+        options: {
+            animation: { duration: 1500 },
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+
+    // Age Chart
+    new Chart(document.getElementById('ageChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Below 20', '20-30', '30-40'],
+            datasets: [{
+                label: 'Percentage',
+                data: [64.7, 34.1, 1.2],
+                backgroundColor: '#3498db'
+            }]
+        },
+        options: {
+            animation: { duration: 1500 },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    // Blood Group Chart
+    new Chart(document.getElementById('bloodChart'), {
+        type: 'pie',
+        data: {
+            labels: ['B+', 'A+', 'O+', 'AB+', 'Others'],
+            datasets: [{
+                data: [35.3, 34.1, 20, 7.1, 3.6],
+                backgroundColor: [
+                    '#dc143c',
+                    '#b01030',
+                    '#3498db',
+                    '#f39c12',
+                    '#7f8c8d'
+                ]
+            }]
+        },
+        options: {
+            animation: { duration: 1500 }
+        }
+    });
+
+    // Awareness Chart
+    new Chart(document.getElementById('awarenessChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Academic', 'Programs', 'Campaigns'],
+            datasets: [{
+                label: '%',
+                data: [47.6, 25.4, 20.6],
+                backgroundColor: '#2c3e50'
+            }]
+        },
+        options: {
+            animation: { duration: 1500 },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+</script>

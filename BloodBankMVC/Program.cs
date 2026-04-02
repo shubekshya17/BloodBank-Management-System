@@ -24,7 +24,7 @@ builder.Services.AddScoped<IAuditService, AuditService>();
 builder.Services.AddScoped<IBloodGroupService, BloodGroupService>();
 builder.Services.AddScoped<SmsService>();
 builder.Services.AddScoped<EmailService>();
-
+builder.Services.AddScoped<ReportService>();
 // Add Session support for Admin authentication
 builder.Services.AddSession(options =>
 {
